@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { REFER_URL } from '@/constants/mapping'
 import { f, t } from '@/i18n'
 import type { Settings } from '@/store/schema'
@@ -33,6 +33,13 @@ const Configuration: React.FC<ConfigurationProps> = ({ state, initial, onSave, o
   const [settings, setSettings] = useState(initial)
   const [jsonText, setJsonText] = useState(JSON.stringify(initial, null, 2))
   const [jsonError, setJsonError] = useState('')
+
+  useEffect(() => {
+    if (!state) return
+    setSettings(initial)
+    setJsonText(JSON.stringify(initial, null, 2))
+    setJsonError('')
+  }, [state, initial])
 
   const syncJsonFromSettings = (next: Settings): void => {
     setSettings(next)
