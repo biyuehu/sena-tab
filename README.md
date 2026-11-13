@@ -54,8 +54,6 @@ You can also use the `sena-tab` webpage by visiting [https://t.himeno-sena.com](
 - [ ] Customizable widgets position
 - [ ] Customizable widgets size
 - [ ] Customizable widgets font size and other styles
-- [ ] Weather widget
-- [ ] Location widget
 
 ## About
 
