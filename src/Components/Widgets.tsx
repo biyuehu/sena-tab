@@ -3,6 +3,8 @@ import { ENGINES } from '@/constants/mapping'
 import { f, t } from '@/i18n'
 import type { Settings } from '@/store/schema'
 import Clock from './Widgets/Clock'
+import Location from './Widgets/Location'
+import Weather from './Widgets/Weather'
 
 interface WidgetsProps {
   widgets: Settings['widgets']
@@ -41,6 +43,10 @@ const Widgets: React.FC<WidgetsProps> = ({ widgets, language }) => {
       window.location.href = url.replaceAll('{value}', value)
     }
   }
+
+  const locationWidget = widgets.find(
+    (w): w is Extract<Settings['widgets'][number], { type: 'location' }> => w.type === 'location'
+  )
 
   return (
     <>
@@ -127,6 +133,21 @@ const Widgets: React.FC<WidgetsProps> = ({ widgets, language }) => {
             // biome-ignore lint: *
             element = <div className="quote" dangerouslySetInnerHTML={{ __html: quote }} />
             break
+          case 'location': {
+            element = <Location mode={widget.mode} city={widget.city} />
+            break
+          }
+          case 'weather': {
+            element = (
+              <Weather
+                unit={widget.unit}
+                mode={locationWidget ? locationWidget.mode : widget.mode}
+                city={locationWidget ? locationWidget.city : widget.city}
+                showDetails={widget.showDetails}
+              />
+            )
+            break
+          }
           default:
             element = <div>{f('widget.unknown', widget.type)}</div>
         }

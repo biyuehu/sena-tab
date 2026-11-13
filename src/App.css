@@ -117,6 +117,52 @@ header {
   /* margin-top: 1rem; */
 }
 
+.widget-location {
+  font-size: 1.5rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.widget-weather {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0.5rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.widget-weather-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.widget-weather-icon {
+  font-size: 1.8rem;
+}
+
+.widget-weather-city {
+  font-size: 1.2rem;
+  opacity: 0.85;
+  font-weight: normal;
+}
+
+.widget-weather-details {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
 footer {
   position: fixed;
   bottom: 1rem;

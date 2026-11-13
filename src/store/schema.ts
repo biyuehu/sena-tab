@@ -93,6 +93,18 @@ export const settingsSchema = Tsu.Object({
             url: Tsu.String()
           })
         )
+      }),
+      Tsu.Object({
+        type: Tsu.Literal('location'),
+        mode: Tsu.Enum(Tsu.Literal('auto'), Tsu.Literal('manual')),
+        city: Tsu.String()
+      }),
+      Tsu.Object({
+        type: Tsu.Literal('weather'),
+        unit: Tsu.Enum(Tsu.Literal('celsius'), Tsu.Literal('fahrenheit')),
+        mode: Tsu.Enum(Tsu.Literal('auto'), Tsu.Literal('manual')),
+        city: Tsu.String(),
+        showDetails: Tsu.Boolean()
       })
     )
   ),

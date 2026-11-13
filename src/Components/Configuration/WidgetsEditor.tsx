@@ -16,12 +16,18 @@ const DEFAULTS_BY_TYPE: Record<Widget['type'], Widget> = {
   greeting: { type: 'greeting', name: '' },
   search: { type: 'search', engine: 'google' },
   quote: { type: 'quote', quote: 'ce' },
-  links: { type: 'links', showIcon: true, links: [] }
+  links: { type: 'links', showIcon: true, links: [] },
+  location: { type: 'location', mode: 'auto', city: '' },
+  weather: { type: 'weather', unit: 'celsius', mode: 'auto', city: '', showDetails: false }
 }
 
 const SEARCH_ENGINE_OPTIONS = ENGINES.map(({ key, name }) => ({ value: key, label: name }))
 
-const WidgetFields: React.FC<{ widget: Widget; onChange: (widget: Widget) => void }> = ({ widget, onChange }) => {
+const WidgetFields: React.FC<{
+  widget: Widget
+  onChange: (widget: Widget) => void
+  hasLocationWidget: boolean
+}> = ({ widget, onChange, hasLocationWidget }) => {
   const timeFormatOptions = [
     { value: 'clock' as const, label: t`config.widget.time.format.clock` },
     { value: '12h' as const, label: t`config.widget.time.format.12h` },
@@ -151,6 +157,66 @@ const WidgetFields: React.FC<{ widget: Widget; onChange: (widget: Widget) => voi
           </div>
         </>
       )
+    case 'location':
+      return (
+        <>
+          <SelectField
+            label={t`config.widget.location.mode`}
+            value={widget.mode}
+            options={[
+              { value: 'auto' as const, label: t`config.widget.location.mode.auto` },
+              { value: 'manual' as const, label: t`config.widget.location.mode.manual` }
+            ]}
+            onChange={(mode) => onChange({ ...widget, mode })}
+          />
+          {widget.mode === 'manual' && (
+            <TextField
+              label={t`config.widget.location.city`}
+              value={widget.city}
+              onChange={(city) => onChange({ ...widget, city })}
+            />
+          )}
+        </>
+      )
+    case 'weather':
+      return (
+        <>
+          <SelectField
+            label={t`config.widget.weather.unit`}
+            value={widget.unit}
+            options={[
+              { value: 'celsius' as const, label: t`config.widget.weather.unit.celsius` },
+              { value: 'fahrenheit' as const, label: t`config.widget.weather.unit.fahrenheit` }
+            ]}
+            onChange={(unit) => onChange({ ...widget, unit })}
+          />
+          {!hasLocationWidget && (
+            <>
+              <SelectField
+                label={t`config.widget.location.mode`}
+                value={widget.mode}
+                options={[
+                  { value: 'auto' as const, label: t`config.widget.location.mode.auto` },
+                  { value: 'manual' as const, label: t`config.widget.location.mode.manual` }
+                ]}
+                onChange={(mode) => onChange({ ...widget, mode })}
+              />
+              {widget.mode === 'manual' && (
+                <TextField
+                  label={t`config.widget.location.city`}
+                  value={widget.city}
+                  onChange={(city) => onChange({ ...widget, city })}
+                />
+              )}
+            </>
+          )}
+          <BooleanField
+            label={t`config.widget.weather.showDetails`}
+            value={widget.showDetails}
+            onChange={(showDetails) => onChange({ ...widget, showDetails })}
+          />
+        </>
+      )
     default:
       return null
   }
@@ -172,6 +238,8 @@ const WidgetsEditor: React.FC<WidgetsEditorProps> = ({ value, onChange }) => {
     onChange(next)
   }
 
+  const hasLocationWidget = value.some((item) => item.type === 'location')
+
   return (
     <div className="config-section">
       {value.map((widget, index) => (
@@ -190,7 +258,11 @@ const WidgetsEditor: React.FC<WidgetsEditorProps> = ({ value, onChange }) => {
               </button>
             </div>
           </div>
-          <WidgetFields widget={widget} onChange={(next) => updateAt(index, next)} />
+          <WidgetFields
+            widget={widget}
+            onChange={(next) => updateAt(index, next)}
+            hasLocationWidget={hasLocationWidget}
+          />
         </div>
       ))}
       <div className="config-add-row">
@@ -200,7 +272,9 @@ const WidgetsEditor: React.FC<WidgetsEditorProps> = ({ value, onChange }) => {
             { value: 'greeting' as const, label: t`config.widget.type.greeting` },
             { value: 'search' as const, label: t`config.widget.type.search` },
             { value: 'quote' as const, label: t`config.widget.type.quote` },
-            { value: 'links' as const, label: t`config.widget.type.links` }
+            { value: 'links' as const, label: t`config.widget.type.links` },
+            { value: 'weather' as const, label: t`config.widget.type.weather` },
+            { value: 'location' as const, label: t`config.widget.type.location` }
           ].map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
