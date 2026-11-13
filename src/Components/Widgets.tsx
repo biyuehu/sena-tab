@@ -2,9 +2,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { ENGINES } from '@/constants/mapping'
 import { f, t } from '@/i18n'
 import type { Settings } from '@/store/schema'
-import Clock from './Widgets/Clock'
-import Location from './Widgets/Location'
-import Weather from './Widgets/Weather'
+import { Clock, Location, Weather } from './Widgets/index'
 
 interface WidgetsProps {
   widgets: Settings['widgets']
@@ -53,7 +51,7 @@ const Widgets: React.FC<WidgetsProps> = ({ widgets, language }) => {
       {widgets.map((widget, index) => {
         let element: JSX.Element
         switch (widget.type) {
-          case 'time':
+          case 'time': {
             element = (
               <>
                 {widget.format === 'clock' ? (
@@ -84,9 +82,9 @@ const Widgets: React.FC<WidgetsProps> = ({ widgets, language }) => {
                 )}
               </>
             )
-
             break
-          case 'greeting':
+          }
+          case 'greeting': {
             element = (
               <h1 className="greeting">
                 {f(
@@ -96,6 +94,7 @@ const Widgets: React.FC<WidgetsProps> = ({ widgets, language }) => {
               </h1>
             )
             break
+          }
           case 'search': {
             const result = ENGINES.find((el) => el.key === widget.engine)
             element = (
@@ -109,7 +108,7 @@ const Widgets: React.FC<WidgetsProps> = ({ widgets, language }) => {
             )
             break
           }
-          case 'quote':
+          case 'quote': {
             if (!isSetQuote) {
               setIsSetQuote(true)
               if (widget.quote === 'custom') {
@@ -133,6 +132,7 @@ const Widgets: React.FC<WidgetsProps> = ({ widgets, language }) => {
             // biome-ignore lint: *
             element = <div className="quote" dangerouslySetInnerHTML={{ __html: quote }} />
             break
+          }
           case 'location': {
             element = <Location mode={widget.mode} city={widget.city} />
             break
@@ -148,8 +148,10 @@ const Widgets: React.FC<WidgetsProps> = ({ widgets, language }) => {
             )
             break
           }
-          default:
+          default: {
             element = <div>{f('widget.unknown', widget.type)}</div>
+            break
+          }
         }
         return <Fragment key={index.toFixed()}>{element}</Fragment>
       })}

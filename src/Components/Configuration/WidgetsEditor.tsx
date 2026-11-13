@@ -43,7 +43,7 @@ const WidgetFields: React.FC<{
     { value: 'custom' as const, label: t`config.widget.quote.custom` }
   ]
   switch (widget.type) {
-    case 'time':
+    case 'time': {
       return (
         <>
           <SelectField
@@ -69,7 +69,8 @@ const WidgetFields: React.FC<{
           />
         </>
       )
-    case 'greeting':
+    }
+    case 'greeting': {
       return (
         <TextField
           label={t`config.widget.greeting.name`}
@@ -77,7 +78,8 @@ const WidgetFields: React.FC<{
           onChange={(name) => onChange({ ...widget, name })}
         />
       )
-    case 'search':
+    }
+    case 'search': {
       return (
         <SelectField
           label={t`config.widget.search.engine`}
@@ -86,7 +88,8 @@ const WidgetFields: React.FC<{
           onChange={(engine) => onChange({ ...widget, engine })}
         />
       )
-    case 'quote':
+    }
+    case 'quote': {
       return (
         <>
           <SelectField
@@ -106,7 +109,8 @@ const WidgetFields: React.FC<{
           )}
         </>
       )
-    case 'links':
+    }
+    case 'links': {
       return (
         <>
           <BooleanField
@@ -157,7 +161,8 @@ const WidgetFields: React.FC<{
           </div>
         </>
       )
-    case 'location':
+    }
+    case 'location': {
       return (
         <>
           <SelectField
@@ -178,7 +183,8 @@ const WidgetFields: React.FC<{
           )}
         </>
       )
-    case 'weather':
+    }
+    case 'weather': {
       return (
         <>
           <SelectField
@@ -217,8 +223,10 @@ const WidgetFields: React.FC<{
           />
         </>
       )
-    default:
+    }
+    default: {
       return null
+    }
   }
 }
 
