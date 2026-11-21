@@ -34,6 +34,15 @@ interface GeoJsPayload {
   readonly longitude?: string | number
 }
 
+interface BigDataCloudPayload {
+  readonly city?: string
+  readonly locality?: string
+  readonly principalSubdivision?: string
+  readonly countryName?: string
+  readonly latitude?: number
+  readonly longitude?: number
+}
+
 interface OpenMeteoPayload {
   readonly current?: {
     readonly temperature_2m: number
@@ -54,14 +63,19 @@ const readStorageCache = <T>(key: string, ttl: number): T | null => {
 const saveStorageCache = <T>(key: string, value: T): void =>
   localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), value }))
 
-export const fetchLocation = async (mode: 'auto' | 'manual', city: string): Promise<ResolvedLocation> => {
+export const fetchLocation = async (
+  mode: 'auto' | 'manual',
+  city: string,
+  language: string
+): Promise<ResolvedLocation> => {
   const normalizedCity = city.trim()
-  const cacheKey = `senatab_location_${mode}_${encodeURIComponent(normalizedCity)}`
+  const lang = language.startsWith('zh') ? 'zh' : language.startsWith('ja') ? 'ja' : 'en'
+  const cacheKey = `senatab_location_${mode}_${lang}_${encodeURIComponent(normalizedCity)}`
   const cached = readStorageCache<ResolvedLocation>(cacheKey, 12 * 60 * 60 * 1000)
   if (cached) return cached
   if (mode === 'manual' && normalizedCity.length > 0) {
     const payload = (await fetch(
-      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(normalizedCity)}&count=1&language=en&format=json`
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(normalizedCity)}&count=1&language=${lang}&format=json`
     ).then((res) => res.json())) as GeocodingPayload
     if (payload.results && payload.results.length > 0) {
       const location: ResolvedLocation = {
@@ -73,9 +87,33 @@ export const fetchLocation = async (mode: 'auto' | 'manual', city: string): Prom
       return location
     }
   }
+  try {
+    const bdc = (await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?localityLanguage=${lang}`).then(
+      (res) => res.json()
+    )) as BigDataCloudPayload
+    const bdcCity = bdc.city ?? bdc.locality ?? bdc.principalSubdivision ?? bdc.countryName
+    if (bdcCity && typeof bdc.latitude === 'number' && typeof bdc.longitude === 'number') {
+      const location: ResolvedLocation = { city: bdcCity, latitude: bdc.latitude, longitude: bdc.longitude }
+      if (mode === 'auto') saveStorageCache(cacheKey, location)
+      return location
+    }
+  } catch {
+    // Safe: Fallback to geojs if BigDataCloud request fails
+  }
   const geo = (await fetch('https://get.geojs.io/v1/ip/geo.json').then((res) => res.json())) as GeoJsPayload
+  let resolvedCity = geo.city ?? geo.region ?? geo.country ?? 'Unknown'
+  if (geo.city) {
+    try {
+      const payload = (await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(geo.city)}&count=1&language=${lang}&format=json`
+      ).then((res) => res.json())) as GeocodingPayload
+      if (payload.results && payload.results.length > 0) resolvedCity = payload.results[0].name
+    } catch {
+      // Safe: Keep fallback city
+    }
+  }
   const location: ResolvedLocation = {
-    city: geo.city ?? geo.region ?? geo.country ?? 'Unknown',
+    city: resolvedCity,
     latitude: Number(geo.latitude),
     longitude: Number(geo.longitude)
   }

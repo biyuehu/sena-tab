@@ -29,6 +29,18 @@ const Configuration: React.FC<ConfigurationProps> = ({ state, initial, onSave, o
     { value: 'zh_CN' as const, label: t`config.language.zh_CN` },
     { value: 'zh_TW' as const, label: t`config.language.zh_TW` }
   ]
+
+  const positionOptions = [
+    { value: 'top-left' as const, label: t`config.widget.position.topLeft` },
+    { value: 'top-center' as const, label: t`config.widget.position.topCenter` },
+    { value: 'top-right' as const, label: t`config.widget.position.topRight` },
+    { value: 'center-left' as const, label: t`config.widget.position.centerLeft` },
+    { value: 'center' as const, label: t`config.widget.position.center` },
+    { value: 'center-right' as const, label: t`config.widget.position.centerRight` },
+    { value: 'bottom-left' as const, label: t`config.widget.position.bottomLeft` },
+    { value: 'bottom-center' as const, label: t`config.widget.position.bottomCenter` },
+    { value: 'bottom-right' as const, label: t`config.widget.position.bottomRight` }
+  ]
   const [tab, setTab] = useState<Tab>('background')
   const [settings, setSettings] = useState(initial)
   const [jsonText, setJsonText] = useState(JSON.stringify(initial, null, 2))
@@ -36,8 +48,12 @@ const Configuration: React.FC<ConfigurationProps> = ({ state, initial, onSave, o
 
   useEffect(() => {
     if (!state) return
-    setSettings(initial)
-    setJsonText(JSON.stringify(initial, null, 2))
+    const next = {
+      ...initial,
+      widgetsPosition: initial.widgetsPosition ?? 'center'
+    }
+    setSettings(next)
+    setJsonText(JSON.stringify(next, null, 2))
     setJsonError('')
   }, [state, initial])
 
@@ -91,10 +107,18 @@ const Configuration: React.FC<ConfigurationProps> = ({ state, initial, onSave, o
                 />
               )}
               {tab === 'widgets' && (
-                <WidgetsEditor
-                  value={settings.widgets}
-                  onChange={(widgets) => syncJsonFromSettings({ ...settings, widgets })}
-                />
+                <div className="config-section">
+                  <SelectField
+                    label={t`config.widget.position`}
+                    value={settings.widgetsPosition ?? 'center'}
+                    options={positionOptions}
+                    onChange={(widgetsPosition) => syncJsonFromSettings({ ...settings, widgetsPosition })}
+                  />
+                  <WidgetsEditor
+                    value={settings.widgets}
+                    onChange={(widgets) => syncJsonFromSettings({ ...settings, widgets })}
+                  />
+                </div>
               )}
               {tab === 'language' && (
                 <div className="config-section">

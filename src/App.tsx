@@ -54,7 +54,7 @@ const App: React.FC = () => {
   })
 
   return (
-    <div className="layout">
+    <div className="layout" data-position={settings.widgetsPosition}>
       <Background settings={settings.background} />
       <header>
         <img

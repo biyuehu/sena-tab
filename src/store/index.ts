@@ -39,6 +39,7 @@ export const DEFAULT_SETTINGS: Settings = {
     blur: 0,
     luminosity: -80
   },
+  widgetsPosition: 'center',
   widgets: [
     {
       type: 'time',
@@ -172,7 +173,18 @@ const useStore = create<StoreState>()(
     }),
     {
       name: 'sena-tab',
-      storage: createJSONStorage(() => localStorage)
+      storage: createJSONStorage(() => localStorage),
+      merge(persistedState, currentState) {
+        const persisted = (persistedState ?? {}) as Partial<StoreState>
+        return {
+          ...currentState,
+          ...persisted,
+          settings: {
+            ...currentState.settings,
+            ...(persisted.settings ?? {})
+          }
+        }
+      }
     }
   )
 )

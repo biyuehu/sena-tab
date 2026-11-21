@@ -134,7 +134,7 @@ const Widgets: React.FC<WidgetsProps> = ({ widgets, language }) => {
             break
           }
           case 'location': {
-            element = <Location mode={widget.mode} city={widget.city} />
+            element = <Location mode={widget.mode} city={widget.city} language={language} />
             break
           }
           case 'weather': {
@@ -144,6 +144,7 @@ const Widgets: React.FC<WidgetsProps> = ({ widgets, language }) => {
                 mode={locationWidget ? locationWidget.mode : widget.mode}
                 city={locationWidget ? locationWidget.city : widget.city}
                 showDetails={widget.showDetails}
+                language={language}
               />
             )
             break

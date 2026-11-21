@@ -108,6 +108,17 @@ export const settingsSchema = Tsu.Object({
       })
     )
   ),
+  widgetsPosition: Tsu.Enum(
+    Tsu.Literal('top-left'),
+    Tsu.Literal('top-center'),
+    Tsu.Literal('top-right'),
+    Tsu.Literal('center-left'),
+    Tsu.Literal('center'),
+    Tsu.Literal('center-right'),
+    Tsu.Literal('bottom-left'),
+    Tsu.Literal('bottom-center'),
+    Tsu.Literal('bottom-right')
+  ),
   language: Tsu.Enum(Tsu.Literal('en_US'), Tsu.Literal('ja_JP'), Tsu.Literal('zh_TW'), Tsu.Literal('zh_CN'))
 })
 

@@ -253,7 +253,7 @@ const WidgetsEditor: React.FC<WidgetsEditorProps> = ({ value, onChange }) => {
       {value.map((widget, index) => (
         <div className="config-widget-card" key={`${widget.type}-${index.toFixed()}`}>
           <div className="config-widget-header">
-            <strong>{widget.type}</strong>
+            <strong>{f(`config.widget.type.${widget.type}`)}</strong>
             <div className="config-widget-actions">
               <button type="button" disabled={index === 0} onClick={() => moveAt(index, -1)}>
                 ↑

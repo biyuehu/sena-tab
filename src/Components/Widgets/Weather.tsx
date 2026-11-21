@@ -2,15 +2,17 @@ import { useEffect, useState } from 'react'
 import { f, t } from '@/i18n'
 import type { CurrentWeather } from '@/services'
 import { fetchLocation, fetchWeather, getWeatherDescriptionKey } from '@/services'
+import type { Settings } from '@/store/schema'
 
 interface WeatherProps {
   readonly unit: 'celsius' | 'fahrenheit'
   readonly mode: 'auto' | 'manual'
   readonly city: string
   readonly showDetails: boolean
+  readonly language: Settings['language']
 }
 
-const Weather: React.FC<WeatherProps> = ({ unit, mode, city, showDetails }) => {
+const Weather: React.FC<WeatherProps> = ({ unit, mode, city, showDetails, language }) => {
   const [weather, setWeather] = useState<CurrentWeather | null>(null)
   const [cityName, setCityName] = useState<string>('')
   const [hasError, setHasError] = useState<boolean>(false)
@@ -21,7 +23,7 @@ const Weather: React.FC<WeatherProps> = ({ unit, mode, city, showDetails }) => {
     setWeather(null)
     const load = async (): Promise<void> => {
       try {
-        const place = await fetchLocation(mode, city)
+        const place = await fetchLocation(mode, city, language)
         const current = await fetchWeather(place.latitude, place.longitude, unit)
         if (!active) return
         setCityName(place.city)
@@ -35,7 +37,7 @@ const Weather: React.FC<WeatherProps> = ({ unit, mode, city, showDetails }) => {
     return () => {
       active = false
     }
-  }, [unit, mode, city])
+  }, [unit, mode, city, language])
 
   if (hasError) return <div className="widget-weather">{t`weather.error`}</div>
   if (!weather) return <div className="widget-weather">{t`weather.loading`}</div>

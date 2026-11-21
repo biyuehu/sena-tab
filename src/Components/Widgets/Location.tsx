@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
 import { t } from '@/i18n'
 import { fetchLocation } from '@/services'
+import type { Settings } from '@/store/schema'
 
 interface LocationProps {
   readonly mode: 'auto' | 'manual'
   readonly city: string
+  readonly language: Settings['language']
 }
 
-const Location: React.FC<LocationProps> = ({ mode, city }) => {
+const Location: React.FC<LocationProps> = ({ mode, city, language }) => {
   const [cityName, setCityName] = useState<string>('')
   const [hasError, setHasError] = useState<boolean>(false)
 
@@ -15,7 +17,7 @@ const Location: React.FC<LocationProps> = ({ mode, city }) => {
     let active = true
     setHasError(false)
     setCityName('')
-    fetchLocation(mode, city)
+    fetchLocation(mode, city, language)
       .then((place) => {
         if (active) setCityName(place.city)
       })
@@ -26,7 +28,7 @@ const Location: React.FC<LocationProps> = ({ mode, city }) => {
     return () => {
       active = false
     }
-  }, [mode, city])
+  }, [mode, city, language])
 
   if (hasError) return <div className="widget-location">{t`location.error`}</div>
   if (!cityName) return <div className="widget-location">{t`location.loading`}</div>
